@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+
+  <title>The Brain App</title>
+
+  <!--CSS style-->
+  <link rel="stylesheet" type="text/css" href="myCSS.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+  <!--required libraries-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+  <!-- tasks part functions-->
+  <script src="graph.js"></script><!--define maps dimentions and missing links-->
+  <script src="graphProgressionFuncs.js"></script><!--define maps dimentions and missing links-->
+  <script src="utilities.js"></script><!--helper functions-->
+  <script src="taskNavig.js"></script><!--navigation task-->
+  <script src="whichIsCloser.js"></script><!-- distance estimation task-->
+  <script src="ajaxFunctions.js"></script>
+</head>
+
+<body>
+
+  <div id="regForm">
+
+    <!--start-->
+    <!--subject details:-->
+        <div id="startDiv" align="center" class="tab">
+      <h1>Fitbit App for the Brain: Group A, Session 2<br></h1>
+      <p><b><i>Oxford Centre for Functional MRI of the Brain</i></b><p>
+      <p><i>Rohini Das with Alon Baram & Tim Behrens</i></p><br>
+      
+      <p><b>You may only play Session 2 if you have completed Session 1 twelve hours ago.</b><p>
+
+      <p><b>Session 2 should begin at 20:00 hours in the evening, so please select the "Click when ready to start" only at this time. </b><p><br>
+
+
+      <p>Enter the same subject ID as used in Session 1:</p><br>
+
+      <input type="text" id="subjectId" value="" ><br><br>
+      <!--when pressing "click when ready to start", call initExp() [] which will look
+      for tables for this subject, and if they don't exist, create them.-->
+      <button class="button buttonNextGame" onclick="initExp()"><b>Click when ready to start</b></button>
+    </div>
+
+    <!--task description:-->
+
+    <div id="globalInstructions"  align="left" class="tab">
+      <h1>Session 2: Task description<br></h1>
+      <p>
+        In this session, the testing session, there will be two games with multiple rounds in each.<br> <br><b>Try your best! The better you perform on these tests, the more reward you will receive (£)!</b><br>
+        <br>
+
+
+      <img src="WICDemo" height="1000" width="1000" alt="LRP Explain Steps">
+
+        <br>Press start to begin the first game, "Which Is Closer". <br>
+      </p>
+      <button class="button buttonNextGame" id="startTaskButton" onclick="startWhichIsCloser(0)">Start</button>
+    </div>
+
+    <!-- Which is closer (previously called Where to Go or distnce estimation task)-->
+
+    <div id="whichIsCloserTab"  class="tab">
+            <h1>Session 2: Game 1<br></h1>
+
+      <p id="closerInsText"> </p>
+
+      <div id="closerTargetDiv"><p id="closerTargetText"></p><img id="closerTargetImg"></div>
+
+      <div id="closerIm1Div">        
+        <button class="buttonAnswer" id="buttonCloser1" onclick="conExp_isCloser(1)">Card 1</button>
+        <img id="closerIm1">
+      </div>
+      <div id="closerIm2Div">
+         <button class="buttonAnswer" id="buttonCloser2" onclick="conExp_isCloser(2)">Card 2</button>
+         <img id="closerIm2">
+      </div>
+
+
+      <p id="closerAnswerRecordText">Your answer was recorded. Please press "Next Round".</p>
+
+      <div id="closerButtonsDiv" align="center">
+
+        <button class="buttonAnswer" id="buttonCloserNext" align="center" onclick="closerNextRound()">Next Round</button>
+      </div>
+    </div>
+
+ 
+
+        <!-- Navigation Task:-->
+
+    <div id="navigTab" class="tab">
+      <!--  define instructions block -->
+            <h1>Session 2: Game 2<br></h1>
+
+      <p id="navigIns">You are now in the second game of Session 2. <br> 
+      Your goal is to go from the current card to the target card by choosing between the two card options: Card 1 and Card 2. Note, Card 1 and Card 2 are both pairs of the current card that you learned back in Session 1. <br>
+      Your aim is to reach the target card in the least number of steps. The minimum number of steps from the current card to the target card is printed next to the current card. <br> 
+      Based on your selection in each step, you can either (1) get closer, (2) get farther, or (3) remain the same distance from your target card.<br> 
+      
+      Choose wisely. Only select "neither" if you believe that Card 1 nor Card 2 will not bring you closer to the target card.</p>
+            <img src="NavigExpDemo3" height="1000" width="1000" alt="LRP Explain Steps">
+        <p id="navigIns"><b> Below is your task <br></b> </p>
+      
+      
+      <!-- <center><p id="dispPc">Continue</p></center>
+      <center><p id="skip">Skip</p></center> -->
+      <div id="targCardDiv">
+        <p id="targCardText"> Your target card is: <br> </p>
+        <img id="targCard">
+      </div>
+      <div id="choiceAndStartCardsDiv">
+        <div id="choiceCardsDiv">
+          <img id="chCard1"/><p></p>
+          <img id="chCard2"/>
+        </div>
+        <div id="currCardDiv">
+          <p id="currCardText"></p><img id="currCard">
+        </div>
+      </div>
+
+      <div id="navigButtonsDiv" align="center">
+        <button class="buttonAnswer" id="buttonNavig1" align="center" onclick="navigTrial(1)">Card 1</button>
+        <button class="buttonAnswer" id="buttonNavig2" align="center" onclick="navigTrial(2)">Card 2</button>
+        <button class="buttonAnswer" id="buttonNavigNeither" align="center" onclick="navigTrial(0)">Neither</button>
+      </div>
+      <div id="endNavigDiv" align="center">
+         <p id="endNavigText"></p>
+        <button class="buttonNextTrial" id="nextRoundButton" align="center" onclick="startNavigTask()">Next Round</button>
+      </div>
+    </div>
+
+    <div id="endExpDiv">
+    <center><p id="endExpText"></p></center>
+    <div id="LbotT" ></div> <div id="RbotT"></div>
+    </div>
+  </div>
+
+
+  <!-- **********************   begin javascript script   ********************-->
+
+  <script>
+  /* the task is organised such that there are 8 learning runs (each is a cycle of all tasks)
+  of 2 maps and 7 inference runs of a third map*/
+
+  // initialise exp object - holding all the variables abut the entire experiment.
+  var exp = {}
+  // current run of the entire task. e.g. when some parts have completed x+1 runs and others
+  // completed x, exp.curRun = x+1. Starts counting from 1, not 0.
+  exp.curRun = 2;
+  exp.mapsVec = [0,0,1,1,2,2,2,2,2]; //defines the map of each run, 0&1 training, 2 - inference
+  exp.missLinkMapNum = 2; // the map where we start using missing links.
+  exp.maxRun = exp.mapsVec.length;
+  exp.curMap = -1; // current map
+  exp.maxMap = 3; // number of maps
+  exp.imgFileNamesArr=[]; // the pictures from directory array
+  exp.totalScore = 0; // total points earned.
+  exp.maxNumNodes=36; // maximal number of nodes/pictures in an array (map)
+  exp.nImgsInDir = 50; // total number of images in imgDir
+
+  // parts (tasks) objects - these will be useful to have better control over global variables
+
+  class partObj {
+    constructor() {
+      this.trial = -1 // current trial. if not currently playing this task part, set to -1. start counting (first trial) from 1, not 0).
+    }
+  }
+  // define obejects for the blocks of the different tasks.
+  let lrnWlkObj = new partObj
+  // number of trials in each run. previously called maxCov or maxCovH. for cluster G. used to be 180 (maxCovC)
+  lrnWlkObj.maxTrial = 120;
+
+  let lrnPrsObj = new partObj
+  // number of trials in each run. previously called maxCovP.
+  lrnPrsObj.maxTrial = 150;
+
+  let pileObj = new partObj
+  pileObj.maxTrial = 5;
+  // number of missing link trials (only relevant for late runs)
+  pileObj.nMissLinkTrials = 2
+  // number of trials where the target is not connected to either pile.
+  pileObj.nNoRightAnsTrials = 2;
+
+  let middleObj = new partObj
+  middleObj.maxTrial = 10;
+
+  let navigObj = new partObj
+  // maximum number of steps allowed in navigation. Previously called maxTask.
+  navigObj.trial = 0;
+  navigObj.maxTrials = 6;
+  navigObj.maxSteps = 200; // max number of steps in each trial (in case subject is crap or gets lost)
+  navigObj.stepsInTrial = 0; // total num of steps in each trial (between 0 and navigObj.maxSteps)
+  navigObj.initDistVec = [2,2,3,3,4]; // the initial distance for each trial
+
+  let closerObj = new partObj
+  closerObj.numCorrect = 0;//number of correct responses in whichIsCloser (distance estimation questions)
+  closerObj.trial = 1
+  closerObj.maxTrial = 15;
+  // G.object
+  var G= {};
+  G.arrayType = "recA" //"HexA";//"clA";//
+
+  function initExp(){ // the first function to be called, formerly called starDisc()
+    /*create/retrive MAPS and save in sql table*/
+
+    document.getElementById("startDiv").style.display="none";
+
+    var subjectId0 = document.getElementById("subjectId").value;
+    if(subjectId0.endsWith("\n")||subjectId0.endsWith(" ")){
+      exp.subjectId = subjectId0.slice(0,subjectId0.length - 1);
+    }else{
+      exp.subjectId = subjectId0;
+    }
+    console.log("Subject Id: " + exp.subjectId);
+
+    exp.history={};
+    exp.history.runNumOfLastTrialSaved2table=[];
+    // function getParamOfLastTableRow is in ajaxFunctions.js, getParamOfLastTableRow gives the current run of each task,
+    // or -1 if no runs of that task were completed
+    exp.history.runNumOfLastTrialSaved2table[0] = getParamOfLastTableRow("navigTable","run");
+    exp.history.runNumOfLastTrialSaved2table[1] = getParamOfLastTableRow("whichIsCloserTable","run");
+    exp.history.maxRunsPerTask = maxArr(exp.history.runNumOfLastTrialSaved2table); // this is where the subject stopped
+
+    // if no task data has already been saved to sql
+    if (exp.history.runNumOfLastTrialSaved2table[0] == -1){
+      exp.curRun  = 1; // global that counts the runs - how many times did all the blocks/tasks complete.
+      exp.lastMap = -1;
+      exp.curMap = exp.mapsVec[0];
+
+      // if some tasks have already been completed
+    }  else {
+      exp.curRun = exp.history.maxRunsPerTask; // exp.curRun global that counts the runs - how many times did all the blocks/tasks complete.
+      exp.curMap = exp.mapsVec[exp.curRun-1]; // current map (-1 because exp.curRun starts at 1 and indeces start at 0)
+      if (exp.curRun>1) {
+        exp.lastMap = exp.mapsVec[exp.curRun-2]; // exp.lastMap is the map before current one, perhaps can delete
+      } else { // still first run
+        exp.lastMap = -1;
+      }
+    }
+
+    // define graph (according to exp.curMap) - transition and adjacency matrices,
+    // and also emission matrix (which node corresponds to which image)
+    defineGraph();
+    save2subjectDetailsAndStartTimeTable();
+
+    /* change display */
+    document.getElementById("globalInstructions").style.display="inline";
+    document.getElementById("startTaskButton").style.display="inline";
+
+  }
+
+</script>
+
+
+</body>
+</html>
